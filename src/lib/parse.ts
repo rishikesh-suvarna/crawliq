@@ -24,7 +24,7 @@ export function parseHTML(html: string): Parsed {
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, 2000);
-  const structured: string[] = [];
+  const structured: any[] = [];
   $('script[type="application/ld+json"]').each((i, el) => {
     structured.push($(el).text());
   });
