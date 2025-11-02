@@ -1,32 +1,181 @@
 @import "tailwindcss";
 
-/* Light/Dark base */
+/* Light/Dark base with improved colors */
 :root {
   color-scheme: light dark;
+  --gradient-start: #6366f1;
+  --gradient-end: #8b5cf6;
 }
 
 body {
-  @apply bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100;
+  @apply bg-black text-white;
+  font-family: var(--font-manrope);
 }
 
-/* Cards / Buttons / Inputs */
+/* Modern glassmorphic cards */
 .card {
-  @apply rounded-2xl shadow-sm border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/70 backdrop-blur;
-  @apply transition duration-300 ease-out hover:shadow-md hover:border-neutral-300 dark:hover:border-neutral-700;
+  @apply rounded-2xl shadow-lg border border-neutral-200/50 dark:border-neutral-800/50;
+  @apply bg-white/80 dark:bg-neutral-900/50 backdrop-blur-xl;
+  @apply transition-all duration-300 ease-out;
+  @apply hover:shadow-xl hover:border-neutral-300/70 dark:hover:border-neutral-700/70;
 }
 
+/* Premium button styles */
 .btn {
-  @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700;
-  @apply transition duration-200 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl;
+  @apply border border-neutral-300 dark:border-neutral-700;
+  @apply bg-white dark:bg-neutral-800;
+  @apply font-medium text-sm;
+  @apply transition-all duration-200 ease-out;
+  @apply hover:bg-neutral-50 dark:hover:bg-neutral-700;
+  @apply hover:shadow-md hover:-translate-y-0.5;
+  @apply active:scale-[0.98] active:translate-y-0;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0;
 }
 
+.btn-primary {
+  @apply bg-white;
+  @apply text-black border-0;
+  @apply bg-slate-100;
+  @apply shadow-md hover:shadow-lg;
+}
+
+.btn-icon {
+  @apply p-2.5 rounded-xl;
+  @apply border border-neutral-300 dark:border-neutral-700;
+  @apply bg-white dark:bg-neutral-800;
+  @apply transition-all duration-200;
+  @apply hover:bg-neutral-50 dark:hover:bg-neutral-700;
+  @apply hover:shadow-md hover:-translate-y-0.5;
+  @apply active:scale-95;
+}
+
+/* Enhanced input styles */
 .input {
-  @apply w-full px-4 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white/80 dark:bg-neutral-900/80 backdrop-blur;
-  @apply focus:outline-none focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-700 transition;
+  @apply w-full px-4 py-3 rounded-xl;
+  @apply border border-neutral-300 dark:border-neutral-700;
+  @apply bg-white/90 dark:bg-neutral-900/50 backdrop-blur;
+  @apply focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:focus:ring-purple-500/50;
+  @apply focus:border-indigo-500 dark:focus:border-purple-500;
+  @apply transition-all duration-200;
+  @apply placeholder:text-neutral-400 dark:placeholder:text-neutral-500;
 }
 
+/* Modern badge styles */
 .badge {
-  @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm;
+  @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium;
+  @apply transition-all duration-200;
+}
+
+.badge-primary {
+  @apply bg-gradient-to-r from-indigo-500/10 to-purple-600/10;
+  @apply text-indigo-700 dark:text-indigo-300;
+  @apply border border-indigo-200 dark:border-indigo-800;
+}
+
+.badge-success {
+  @apply bg-emerald-100 dark:bg-emerald-900/30;
+  @apply text-emerald-700 dark:text-emerald-300;
+  @apply border border-emerald-200 dark:border-emerald-800;
+}
+
+.badge-warning {
+  @apply bg-amber-100 dark:bg-amber-900/30;
+  @apply text-amber-700 dark:text-amber-300;
+  @apply border border-amber-200 dark:border-amber-800;
+}
+
+.badge-error {
+  @apply bg-red-100 dark:bg-red-900/30;
+  @apply text-red-700 dark:text-red-300;
+  @apply border border-red-200 dark:border-red-800;
+}
+
+.badge-info {
+  @apply bg-blue-100 dark:bg-blue-900/30;
+  @apply text-blue-700 dark:text-blue-300;
+  @apply border border-blue-200 dark:border-blue-800;
+}
+
+/* Score indicators */
+.score-circle {
+  @apply flex items-center justify-center;
+  @apply w-16 h-16 rounded-full;
+  @apply font-bold text-lg;
+  @apply shadow-lg;
+  @apply transition-transform duration-300;
+  @apply hover:scale-110;
+}
+
+.score-high {
+  @apply bg-gradient-to-br from-emerald-400 to-emerald-600;
+  @apply text-white;
+}
+
+.score-medium {
+  @apply bg-gradient-to-br from-amber-400 to-amber-600;
+  @apply text-white;
+}
+
+.score-low {
+  @apply bg-gradient-to-br from-red-400 to-red-600;
+  @apply text-white;
+}
+
+/* Chat message styles */
+.message-user {
+  @apply bg-gradient-to-r from-indigo-500 to-purple-600;
+  @apply text-white;
+  @apply ml-auto max-w-[80%];
+  @apply rounded-2xl rounded-br-md;
+  @apply shadow-md;
+}
+
+.message-assistant {
+  @apply bg-white dark:bg-neutral-800;
+  @apply border border-neutral-200 dark:border-neutral-700;
+  @apply max-w-[80%];
+  @apply rounded-2xl rounded-bl-md;
+  @apply shadow-sm;
+}
+
+/* Scrollbar styling */
+.custom-scrollbar::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-neutral-100 dark:bg-neutral-900 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-neutral-300 dark:bg-neutral-700 rounded-full;
+  @apply hover:bg-neutral-400 dark:hover:bg-neutral-600;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent;
+}
+
+/* Animations */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%);
+  background-size: 1000px 100%;
 }
 
 /* Reduced motion friendly */
@@ -36,4 +185,21 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* Loading pulse */
+@keyframes pulse-soft {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-pulse {
+  animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

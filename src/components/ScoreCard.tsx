@@ -1,6 +1,91 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Gauge, TrendingUp, Zap } from 'lucide-react';
+
+function CircularScore({ score, label }: { score: number; label: string }) {
+  const getColor = (s: number) => {
+    if (s >= 80) return 'text-green-600 dark:text-green-500';
+    if (s >= 60) return 'text-amber-600 dark:text-amber-400';
+    return 'text-red-600 dark:text-red-400';
+  };
+
+  const getGradient = (s: number) => {
+    if (s >= 80) return 'from-green-400 to-green-600';
+    if (s >= 60) return 'from-amber-400 to-amber-600';
+    return 'from-red-400 to-red-600';
+  };
+
+  const circumference = 2 * Math.PI * 36;
+  const strokeDashoffset = circumference - (score / 100) * circumference;
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative w-24 h-24">
+        <svg className="w-24 h-24 transform -rotate-90">
+          {/* Background circle */}
+          <circle
+            cx="48"
+            cy="48"
+            r="36"
+            stroke="currentColor"
+            strokeWidth="6"
+            fill="none"
+            className="text-neutral-200 dark:text-neutral-800"
+          />
+          {/* Progress circle */}
+          <motion.circle
+            cx="48"
+            cy="48"
+            r="36"
+            stroke="url(#gradient)"
+            strokeWidth="6"
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset }}
+            transition={{ duration: 1, ease: 'easeOut' }}
+          />
+          <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop
+                offset="0%"
+                className={
+                  score >= 80
+                    ? 'stop-green-400'
+                    : score >= 60
+                    ? 'stop-amber-400'
+                    : 'stop-red-400'
+                }
+                stopOpacity="1"
+              />
+              <stop
+                offset="100%"
+                className={
+                  score >= 80
+                    ? 'stop-green-600'
+                    : score >= 60
+                    ? 'stop-amber-600'
+                    : 'stop-red-600'
+                }
+                stopOpacity="1"
+              />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className={`text-2xl font-bold ${getColor(score)}`}>
+            {score ?? 'N/A'}
+          </span>
+        </div>
+      </div>
+      <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 uppercase tracking-wide">
+        {label}
+      </span>
+    </div>
+  );
+}
 
 export default function ScoreCard({
   scores,
@@ -11,75 +96,122 @@ export default function ScoreCard({
   psi: any;
   url: string;
 }) {
-  const pill = (label: string, v: number) => (
-    <span className="badge bg-neutral-100 dark:bg-neutral-800">
-      {label}: <span className="font-semibold">{v ?? 'NA'}</span>
-    </span>
-  );
+  const scoreMetrics = [
+    { label: 'Technical', value: scores.technical },
+    { label: 'Content', value: scores.content },
+    { label: 'Metadata', value: scores.metadata },
+    { label: 'Links', value: scores.links },
+    { label: 'Media', value: scores.media },
+  ];
+
+  const performanceMetrics = [
+    { label: 'Perf', value: psi?.lighthouse?.performance, icon: Zap },
+    { label: 'SEO', value: psi?.lighthouse?.seo, icon: TrendingUp },
+    { label: 'LCP', value: psi?.lcp, unit: 's', icon: Gauge },
+    { label: 'CLS', value: psi?.cls, icon: Gauge },
+    { label: 'INP', value: psi?.inp, unit: 's', icon: Gauge },
+  ];
 
   return (
     <motion.section
-      className="card p-4 space-y-3"
-      initial={{ opacity: 0, y: 6 }}
+      className="card p-6 space-y-6"
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.4 }}
     >
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Audit – {url}</h2>
-        <div className="badge bg-neutral-200 dark:bg-neutral-800">
-          Overall: <span className="font-bold">{scores.overall}</span>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-2xl font-bold mb-1">SEO Audit Results</h2>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 truncate">
+            {url}
+          </p>
         </div>
+        <motion.div
+          className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white shadow-lg text-black dark:bg-neutral-800 dark:text-white"
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="text-black dark:text-white text-center">
+            <div className="text-xs font-medium opacity-90">Overall Score</div>
+            <div className="text-2xl font-bold">{scores.overall}</div>
+          </div>
+        </motion.div>
       </div>
 
-      <motion.div
-        className="flex flex-wrap gap-2"
-        initial="hidden"
-        animate="show"
-        variants={{
-          hidden: {},
-          show: { transition: { staggerChildren: 0.04 } },
-        }}
-      >
-        {['technical', 'content', 'metadata', 'links', 'media'].map((k) => (
-          <motion.div
-            key={k}
-            variants={{
-              hidden: { opacity: 0, y: 6 },
-              show: { opacity: 1, y: 0 },
-            }}
-          >
-            {pill(k[0].toUpperCase() + k.slice(1), scores[k])}
-          </motion.div>
-        ))}
-      </motion.div>
+      {/* Main Scores */}
+      <div>
+        <h3 className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wide mb-4">
+          Category Breakdown
+        </h3>
+        <motion.div
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6"
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.08 } },
+          }}
+        >
+          {scoreMetrics.map((metric) => (
+            <motion.div
+              key={metric.label}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                show: { opacity: 1, y: 0 },
+              }}
+            >
+              <CircularScore score={metric.value} label={metric.label} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
 
-      <motion.div
-        className="flex flex-wrap gap-2 opacity-80"
-        initial="hidden"
-        animate="show"
-        variants={{
-          hidden: {},
-          show: { transition: { staggerChildren: 0.04 } },
-        }}
-      >
-        {[
-          ['Lighthouse Perf', psi?.lighthouse?.performance],
-          ['Lighthouse SEO', psi?.lighthouse?.seo],
-          ['LCP(s)', psi?.lcp],
-          ['CLS', psi?.cls],
-          ['INP(s)', psi?.inp],
-        ].map(([label, v]) => (
-          <motion.div
-            key={label as string}
-            variants={{
-              hidden: { opacity: 0, y: 6 },
-              show: { opacity: 1, y: 0 },
-            }}
-          >
-            {pill(label as string, v as number)}
-          </motion.div>
-        ))}
-      </motion.div>
+      {/* Performance Metrics */}
+      <div>
+        <h3 className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wide mb-4">
+          Performance Metrics
+        </h3>
+        <motion.div
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.05 } },
+          }}
+        >
+          {performanceMetrics.map((metric) => {
+            const Icon = metric.icon;
+            return (
+              <motion.div
+                key={metric.label}
+                className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 hover:shadow-md transition-shadow"
+                variants={{
+                  hidden: { opacity: 0, scale: 0.9 },
+                  show: { opacity: 1, scale: 1 },
+                }}
+                whileHover={{ y: -2 }}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <Icon className="w-4 h-4 text-green-500" />
+                  <span className="text-xs font-medium text-green-500 uppercase tracking-wide">
+                    {metric.label}
+                  </span>
+                </div>
+                <div className="text-2xl font-bold">
+                  {metric.value ?? 'N/A'}
+                  {metric.unit && metric.value && (
+                    <span className="text-sm font-normal text-neutral-500 dark:text-neutral-400 ml-1">
+                      {metric.unit}
+                    </span>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </div>
     </motion.section>
   );
 }
