@@ -10,7 +10,7 @@ export type Parsed = {
   twitter: Record<string, string>;
   links: { href: string; rel?: string }[];
   images: { src: string; alt?: string }[];
-  structured: string[];
+  structured: any[];
   lang?: string;
   hreflang: { href: string; lang: string }[];
   textSample: string;
@@ -25,7 +25,7 @@ export function parseHTML(html: string): Parsed {
     .trim()
     .slice(0, 2000);
   const structured: any[] = [];
-  $('script[type="application/ld+json"]').each((i, el) => {
+  $('script[type="application/ld+json"]').each((_, el) => {
     structured.push($(el).text());
   });
   const og: Record<string, string> = {};
