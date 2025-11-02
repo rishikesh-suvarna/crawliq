@@ -133,7 +133,7 @@ export default function Page() {
             />
 
             <motion.button
-              className="btn"
+              className="btn w-full"
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
               onClick={async () => {

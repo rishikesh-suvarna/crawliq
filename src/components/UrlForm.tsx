@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Loader2, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useState } from 'react';
 
 export default function UrlForm({
@@ -48,10 +48,7 @@ export default function UrlForm({
         whileTap={!loading && url.trim() ? { scale: 0.98 } : {}}
       >
         {loading ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin" />
-            Analyzing...
-          </>
+          <>Analyzing...</>
         ) : (
           <>
             <Search className="w-4 h-4" />

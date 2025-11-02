@@ -105,11 +105,38 @@ export default function ScoreCard({
   ];
 
   const performanceMetrics = [
-    { label: 'Perf', value: psi?.lighthouse?.performance, icon: Zap },
-    { label: 'SEO', value: psi?.lighthouse?.seo, icon: TrendingUp },
-    { label: 'LCP', value: psi?.lcp, unit: 's', icon: Gauge },
-    { label: 'CLS', value: psi?.cls, icon: Gauge },
-    { label: 'INP', value: psi?.inp, unit: 's', icon: Gauge },
+    {
+      label: 'Perf',
+      value: psi?.lighthouse?.performance,
+      icon: Zap,
+      fullform: 'Performance',
+    },
+    {
+      label: 'SEO',
+      value: psi?.lighthouse?.seo,
+      icon: TrendingUp,
+      fullform: 'SEO',
+    },
+    {
+      label: 'LCP',
+      value: psi?.lcp,
+      unit: 's',
+      icon: Gauge,
+      fullform: 'Largest Contentful Paint',
+    },
+    {
+      label: 'CLS',
+      value: psi?.cls,
+      icon: Gauge,
+      fullform: 'Cumulative Layout Shift',
+    },
+    {
+      label: 'INP',
+      value: psi?.inp,
+      unit: 's',
+      icon: Gauge,
+      fullform: 'Interaction to Next Paint',
+    },
   ];
 
   return (
@@ -170,7 +197,7 @@ export default function ScoreCard({
       {/* Performance Metrics */}
       <div>
         <h3 className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wide mb-4">
-          Performance Metrics
+          Performance Metrics (PageSpeed Insights)
         </h3>
         <motion.div
           className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
@@ -185,6 +212,7 @@ export default function ScoreCard({
             const Icon = metric.icon;
             return (
               <motion.div
+                title={metric.fullform}
                 key={metric.label}
                 className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 hover:shadow-md transition-shadow"
                 variants={{
@@ -195,7 +223,10 @@ export default function ScoreCard({
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Icon className="w-4 h-4 text-emerald-500" />
-                  <span className="text-xs font-medium text-emerald-500 uppercase tracking-wide">
+                  <span
+                    className="text-xs font-medium text-emerald-500 uppercase tracking-wide"
+                    title={metric.fullform}
+                  >
                     {metric.label}
                   </span>
                 </div>
