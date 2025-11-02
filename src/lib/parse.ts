@@ -25,9 +25,9 @@ export function parseHTML(html: string): Parsed {
     .trim()
     .slice(0, 2000);
   const structured: string[] = [];
-  $('script[type="application/ld+json"]').each((_, el) =>
-    structured.push($(el).text())
-  );
+  $('script[type="application/ld+json"]').each((i, el) => {
+    structured.push($(el).text());
+  });
   const og: Record<string, string> = {};
   const twitter: Record<string, string> = {};
   $('meta').each((_, m) => {
