@@ -129,7 +129,7 @@ export default function FindingsList({ findings }: { findings: Finding[] }) {
                     </div>
                   )}
                   <div className="mt-2">
-                    <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-500">
+                    <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-500 capitalize">
                       <span className="w-1.5 h-1.5 rounded-full bg-neutral-400 dark:bg-neutral-600" />
                       {f.category}
                     </span>

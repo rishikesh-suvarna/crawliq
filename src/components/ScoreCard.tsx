@@ -5,13 +5,13 @@ import { Gauge, TrendingUp, Zap } from 'lucide-react';
 
 function CircularScore({ score, label }: { score: number; label: string }) {
   const getColor = (s: number) => {
-    if (s >= 80) return 'text-green-600 dark:text-green-500';
+    if (s >= 80) return 'text-emerald-600 dark:text-emerald-500';
     if (s >= 60) return 'text-amber-600 dark:text-amber-400';
     return 'text-red-600 dark:text-red-400';
   };
 
   const getGradient = (s: number) => {
-    if (s >= 80) return 'from-green-400 to-green-600';
+    if (s >= 80) return 'from-emerald-400 to-emerald-600';
     if (s >= 60) return 'from-amber-400 to-amber-600';
     return 'from-red-400 to-red-600';
   };
@@ -53,7 +53,7 @@ function CircularScore({ score, label }: { score: number; label: string }) {
                 offset="0%"
                 className={
                   score >= 80
-                    ? 'stop-green-400'
+                    ? 'stop-emerald-400'
                     : score >= 60
                     ? 'stop-amber-400'
                     : 'stop-red-400'
@@ -64,7 +64,7 @@ function CircularScore({ score, label }: { score: number; label: string }) {
                 offset="100%"
                 className={
                   score >= 80
-                    ? 'stop-green-600'
+                    ? 'stop-emerald-600'
                     : score >= 60
                     ? 'stop-amber-600'
                     : 'stop-red-600'
@@ -194,8 +194,8 @@ export default function ScoreCard({
                 whileHover={{ y: -2 }}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <Icon className="w-4 h-4 text-green-500" />
-                  <span className="text-xs font-medium text-green-500 uppercase tracking-wide">
+                  <Icon className="w-4 h-4 text-emerald-500" />
+                  <span className="text-xs font-medium text-emerald-500 uppercase tracking-wide">
                     {metric.label}
                   </span>
                 </div>
