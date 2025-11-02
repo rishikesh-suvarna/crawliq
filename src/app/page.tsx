@@ -154,7 +154,10 @@ export default function Page() {
               <Suggestions text={report.suggestions} />
             </div>
 
-            <ChatPanel />
+            <ChatPanel
+              auditHash={report.auditHash}
+              url={report.finalUrl || report.url}
+            />
           </motion.div>
         )}
 

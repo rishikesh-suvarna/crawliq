@@ -4,7 +4,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { MessageCircle, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-export default function ChatPanel() {
+export default function ChatPanel({
+  auditHash,
+  url,
+}: {
+  auditHash?: string;
+  url?: string;
+}) {
   const [q, setQ] = useState('');
   const [log, setLog] = useState<
     { role: 'user' | 'assistant'; content: string }[]
@@ -20,6 +26,13 @@ export default function ChatPanel() {
 
   async function ask() {
     if (!q.trim() || isLoading) return;
+    if (!auditHash && !url) {
+      setLog((l) => [
+        ...l,
+        { role: 'assistant', content: 'Run an audit first, then chat.' },
+      ]);
+      return;
+    }
     const msg = q.trim();
     setQ('');
     setLog((l) => [...l, { role: 'user', content: msg }]);
@@ -29,7 +42,7 @@ export default function ChatPanel() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ question: msg }),
+        body: JSON.stringify({ question: msg, auditHash, url }),
       });
       const json = await res.json();
       setLog((l) => [

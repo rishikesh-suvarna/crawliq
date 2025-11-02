@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
     const psiFresh = isFresh(cached?.psi_expires_at);
 
     if (cached && htmlFresh && (!PSI_ON || psiFresh)) {
-      return NextResponse.json(cached.report_json);
+      return NextResponse.json({ ...cached.report_json, auditHash });
     }
 
     // Conditional fetch (304 short-circuit)
@@ -176,7 +176,7 @@ export async function POST(req: NextRequest) {
           lastModified: cached.last_modified,
           contentHash: cached.content_hash,
         });
-        return NextResponse.json(merged);
+        return NextResponse.json({ ...merged, auditHash });
       }
 
       // extend HTML TTL without recomputing
@@ -189,7 +189,7 @@ export async function POST(req: NextRequest) {
           auditHash,
         ]
       );
-      return NextResponse.json(cached.report_json);
+      return NextResponse.json({ ...cached.report_json, auditHash });
     }
 
     // If 200 with body — we run full audit, but skip LLM suggestions if content_hash unchanged
@@ -223,7 +223,7 @@ export async function POST(req: NextRequest) {
       contentHash: condRes.contentHash || undefined,
     });
 
-    return NextResponse.json(report);
+    return NextResponse.json({ ...report, auditHash });
   } catch (e: any) {
     const msg = String(e?.message || e);
     const code = /Daily limit/i.test(msg) ? 429 : 500;
