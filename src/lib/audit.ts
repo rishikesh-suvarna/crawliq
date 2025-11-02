@@ -20,11 +20,12 @@ export type AuditReport = {
 export async function auditUrl(
   url: string,
   rag: RAG,
-  psiKey?: string
+  psiKey?: string,
+  opts?: { skipSuggestions?: boolean }
 ): Promise<AuditReport> {
   if (!(await allowedByRobots(url))) throw new Error('Blocked by robots.txt');
   const { html, finalUrl, status } = await fetchHTML(url);
-  const parsed = parseHTML(html);
+  const parsed = parseHTML(html || '');
   const findings = runChecks(parsed, finalUrl);
   const psi = await getPSI(finalUrl, psiKey);
   const scores = score(findings, psi);
@@ -64,7 +65,9 @@ METRICS:
 ${psiTxt}
 Return 6–10 prioritized bullets.`;
 
-  const suggestions = await rag.generate(SUGGESTIONS_SYS, userPrompt);
+  const suggestions = opts?.skipSuggestions
+    ? '- (skipped) Content unchanged since last crawl; re-run to regenerate.'
+    : await rag.generate(SUGGESTIONS_SYS, userPrompt);
 
   const chunks = [
     {

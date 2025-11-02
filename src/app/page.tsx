@@ -40,6 +40,19 @@ export default function Page() {
             psi={report.psi}
             url={report.finalUrl}
           />
+          <button
+            className="btn"
+            onClick={async () => {
+              await fetch('/api/invalidate', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ url: report.finalUrl || report.url }),
+              });
+              alert('Re-run queued! Results will refresh on next analyze.');
+            }}
+          >
+            Re-run audit now
+          </button>
           <div className="grid md:grid-cols-2 gap-6">
             <FindingsList findings={report.findings} />
             <Suggestions text={report.suggestions} />
