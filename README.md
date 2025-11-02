@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CrawlIQ
 
-## Getting Started
+**CrawlIQ** is an AI-powered SEO auditing and chat platform.
+Paste any website URL and get instant rankings, errors, and actionable improvement suggestions — then chat with an AI SEO assistant trained on the audit.
 
-First, run the development server:
+> GitHub → [https://github.com/rishikesh-suvarna/crawliq](https://github.com/rishikesh-suvarna/crawliq)
+
+---
+
+## Features
+
+- **Instant SEO Audit** – Fetches the page, runs HTML checks, metadata analysis, image alt verification, schema detection, and more.
+- **AI-Generated Suggestions** – GPT-5 summarizes key improvements and prioritizes issues.
+- **Chat with Your Audit** – Ask natural-language questions about rankings, fixes, or optimizations.
+- **RAG-Based Context** – Uses embeddings to let GPT reference audit data accurately.
+- **Smart Crawling** – Respects `robots.txt`, uses conditional requests (`ETag`, `Last-Modified`), and obeys crawl-delay.
+- **Caching & TTLs** – Caches audits with separate HTML and PSI lifetimes.
+- **Background Recrawls** – Stale pages refresh automatically via queue with host rate-limit.
+- **Re-run Audit Button** – Manual invalidation and background re-analysis.
+- **Cost Guardrails** – Daily user caps and “skip LLM suggestions” when content is unchanged.
+
+---
+
+## Tech Stack
+
+| Layer            | Tech                                       |
+| ---------------- | ------------------------------------------ |
+| Frontend         | Next.js 14 (App Router) + TailwindCSS      |
+| Backend          | Next.js API routes (Node)                  |
+| LLM / Embeddings | OpenAI GPT-5 + `text-embedding-3-small`    |
+| Database         | PostgreSQL (Neon/Vercel Postgres friendly) |
+| Queue            | In-memory rate-limited worker (`p-limit`)  |
+| Auditing         | Cheerio HTML parser + Google PageSpeed API |
+
+---
+
+## Setup
+
+### 1. Clone & install
+
+```bash
+git clone https://github.com/rishikesh-suvarna/crawliq.git
+cd crawliq
+npm install
+```
+
+### 2. Environment variables
+
+Copy .env.example → .env and fill values:
+
+```bash
+cp .env.example .env
+```
+
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-5
+EMBED_MODEL=text-embedding-3-small
+GOOGLE_PSI_KEY= # optional PageSpeed API key
+DATABASE_URL=postgresql://user:pass@host:port/dbname
+
+### 3. Database setup
+
+Run the migrations to set up the database schema:
+
+```bash
+psql $DATABASE_URL -f sql/migrations.sql
+```
+
+### 4. Run the app
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The app should now be running at [http://localhost:3000](http://localhost:3000)
