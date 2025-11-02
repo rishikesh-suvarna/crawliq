@@ -1,4 +1,6 @@
 'use client';
+
+import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 
 export default function ChatPanel() {
@@ -25,23 +27,37 @@ export default function ChatPanel() {
   }
 
   return (
-    <section className="card p-4 space-y-3">
+    <motion.section
+      className="card p-4 space-y-3"
+      initial={{ opacity: 0, y: 6 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-20%' }}
+      transition={{ duration: 0.25 }}
+    >
       <h3 className="text-lg font-semibold">Chat about this audit</h3>
+
       <div className="space-y-2 max-h-80 overflow-auto pr-2">
-        {log.map((m, i) => (
-          <div
-            key={i}
-            className={`p-3 rounded-xl ${
-              m.role === 'user'
-                ? 'bg-neutral-100 dark:bg-neutral-800'
-                : 'bg-white/60 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800'
-            }`}
-          >
-            <div className="text-xs opacity-60 mb-1">{m.role}</div>
-            <div className="whitespace-pre-wrap text-sm">{m.content}</div>
-          </div>
-        ))}
+        <AnimatePresence initial={false}>
+          {log.map((m, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+              className={`p-3 rounded-xl ${
+                m.role === 'user'
+                  ? 'bg-neutral-100 dark:bg-neutral-800'
+                  : 'bg-white/60 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800'
+              }`}
+            >
+              <div className="text-xs opacity-60 mb-1">{m.role}</div>
+              <div className="whitespace-pre-wrap text-sm">{m.content}</div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
+
       <form
         className="flex gap-2"
         onSubmit={(e) => {
@@ -55,8 +71,14 @@ export default function ChatPanel() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
-        <button className="btn">Send</button>
+        <motion.button
+          className="btn"
+          whileHover={{ y: -1 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          Send
+        </motion.button>
       </form>
-    </section>
+    </motion.section>
   );
 }

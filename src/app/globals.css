@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Light/Dark base */
 :root {
   color-scheme: light dark;
 }
@@ -8,18 +9,31 @@ body {
   @apply bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100;
 }
 
+/* Cards / Buttons / Inputs */
 .card {
-  @apply rounded-2xl shadow-sm border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900;
+  @apply rounded-2xl shadow-sm border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/70 backdrop-blur;
+  @apply transition duration-300 ease-out hover:shadow-md hover:border-neutral-300 dark:hover:border-neutral-700;
 }
 
 .btn {
-  @apply px-4 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition;
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700;
+  @apply transition duration-200 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-[0.98];
 }
 
 .input {
-  @apply w-full px-4 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900;
+  @apply w-full px-4 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white/80 dark:bg-neutral-900/80 backdrop-blur;
+  @apply focus:outline-none focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-700 transition;
 }
 
 .badge {
   @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm;
+}
+
+/* Reduced motion friendly */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

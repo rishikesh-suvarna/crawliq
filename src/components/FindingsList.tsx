@@ -1,3 +1,7 @@
+'use client';
+
+import { motion } from 'framer-motion';
+
 type Finding = {
   id: string;
   severity: 'error' | 'warn' | 'info';
@@ -6,6 +10,7 @@ type Finding = {
   hint?: string;
   category: string;
 };
+
 const color = (s: string) =>
   s === 'error'
     ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'
@@ -15,13 +20,23 @@ const color = (s: string) =>
 
 export default function FindingsList({ findings }: { findings: Finding[] }) {
   return (
-    <section className="card p-4">
+    <motion.section
+      className="card p-4"
+      initial={{ opacity: 0, y: 6 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-20%' }}
+      transition={{ duration: 0.25 }}
+    >
       <h3 className="text-lg font-semibold mb-3">Findings</h3>
       <ul className="space-y-3">
-        {findings.map((f) => (
-          <li
+        {findings.map((f, idx) => (
+          <motion.li
             key={f.id}
             className="p-3 rounded-xl border border-neutral-200 dark:border-neutral-800"
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.2, delay: idx * 0.02 }}
           >
             <div className="flex items-center justify-between">
               <div className="font-medium">{f.id}</div>
@@ -41,9 +56,9 @@ export default function FindingsList({ findings }: { findings: Finding[] }) {
             <div className="text-xs mt-1 opacity-60">
               Category: {f.category}
             </div>
-          </li>
+          </motion.li>
         ))}
       </ul>
-    </section>
+    </motion.section>
   );
 }

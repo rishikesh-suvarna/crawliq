@@ -1,4 +1,6 @@
 'use client';
+
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 
 export default function UrlForm({
@@ -9,13 +11,17 @@ export default function UrlForm({
   loading: boolean;
 }) {
   const [url, setUrl] = useState('');
+
   return (
-    <form
+    <motion.form
       className="flex items-center gap-3"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit(url);
       }}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
     >
       <input
         className="input"
@@ -23,9 +29,14 @@ export default function UrlForm({
         value={url}
         onChange={(e) => setUrl(e.target.value)}
       />
-      <button className="btn" disabled={loading || !url}>
+      <motion.button
+        className="btn"
+        disabled={loading || !url}
+        whileHover={{ y: -1 }}
+        whileTap={{ scale: 0.98 }}
+      >
         {loading ? 'Analyzing...' : 'Analyze'}
-      </button>
-    </form>
+      </motion.button>
+    </motion.form>
   );
 }
