@@ -1,205 +1,248 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-/* Light/Dark base with improved colors */
+/* ---------------------------------------------------------------------------
+   CrawlIQ design tokens
+   Palette is oklch throughout: a warm paper canvas, a cool ink for text and
+   dark panels, and a single cyan accent that marks anything the crawler did.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-canvas: oklch(0.95 0.006 95);
+  --color-paper: oklch(0.99 0.004 95);
+  --color-paper-2: oklch(0.97 0.005 95);
+  --color-paper-3: oklch(0.96 0.005 95);
+
+  --color-ink-900: oklch(0.19 0.015 250);
+  --color-ink-800: oklch(0.24 0.015 250);
+  --color-ink-700: oklch(0.3 0.015 250);
+  --color-ink-600: oklch(0.34 0.015 250);
+  --color-ink-500: oklch(0.42 0.012 250);
+  --color-ink-400: oklch(0.47 0.012 250);
+  --color-ink-300: oklch(0.55 0.012 250);
+  --color-ink-200: oklch(0.58 0.012 250);
+
+  --color-line: oklch(0.9 0.008 250);
+  --color-line-soft: oklch(0.93 0.006 250);
+  --color-line-strong: oklch(0.88 0.008 250);
+  --color-line-dark: oklch(0.35 0.015 250);
+
+  --color-accent: oklch(0.68 0.14 218);
+  --color-accent-bright: oklch(0.72 0.14 218);
+  --color-accent-deep: oklch(0.52 0.11 218);
+  --color-violet: oklch(0.65 0.15 300);
+
+  --color-on-dark: oklch(0.97 0.004 95);
+  --color-on-dark-body: oklch(0.9 0.006 250);
+  --color-on-dark-value: oklch(0.85 0.006 250);
+  --color-on-dark-muted: oklch(0.78 0.01 250);
+  --color-on-dark-dim: oklch(0.68 0.01 250);
+  --color-on-dark-faint: oklch(0.6 0.012 250);
+
+  --font-display: var(--font-space-grotesk), sans-serif;
+  --font-sans: var(--font-instrument-sans), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+/* Severity colours. Two sets: on paper, and on the dark panels. */
 :root {
-  color-scheme: light dark;
-  --gradient-start: #6366f1;
-  --gradient-end: #8b5cf6;
+  --sev-crit-bg: oklch(0.93 0.04 30);
+  --sev-crit-fg: oklch(0.45 0.16 30);
+  --sev-warn-bg: oklch(0.94 0.05 85);
+  --sev-warn-fg: oklch(0.48 0.13 75);
+  --sev-pass-bg: oklch(0.93 0.045 218);
+  --sev-pass-fg: oklch(0.42 0.1 218);
+
+  --sev-crit-bg-dark: oklch(0.36 0.09 30);
+  --sev-crit-fg-dark: oklch(0.86 0.09 30);
+  --sev-warn-bg-dark: oklch(0.38 0.07 80);
+  --sev-warn-fg-dark: oklch(0.88 0.09 85);
+  --sev-pass-bg-dark: oklch(0.34 0.06 218);
+  --sev-pass-fg-dark: oklch(0.85 0.1 218);
 }
 
-body {
-  @apply bg-black text-white;
-  font-family: var(--font-manrope);
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-canvas);
+    color: var(--color-ink-800);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: oklch(0.68 0.14 218 / 0.25);
+  }
 }
 
-/* Modern glassmorphic cards */
-.card {
-  @apply rounded-2xl shadow-lg border border-neutral-200/50 dark:border-neutral-800/50;
-  @apply bg-white/80 dark:bg-neutral-900/50 backdrop-blur-xl;
-  @apply transition-all duration-300 ease-out;
-  @apply hover:shadow-xl hover:border-neutral-300/70 dark:hover:border-neutral-700/70;
+@layer components {
+  /* Section eyebrow: mono, wide-tracked, always above a heading. */
+  .eyebrow {
+    @apply font-mono text-xs tracking-[0.1em] text-ink-300;
+  }
+
+  .eyebrow-accent {
+    @apply font-mono text-xs tracking-[0.1em] text-accent-deep;
+  }
+
+  .card {
+    @apply rounded-xl border border-line bg-paper;
+  }
+
+  .btn-primary {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-ink-900 px-[18px] py-2.5;
+    @apply text-[15px] font-medium text-on-dark transition-colors duration-150;
+    @apply hover:bg-ink-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-ink-900;
+  }
+
+  .btn-accent {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-accent-bright px-6 py-3;
+    @apply text-[15px] font-semibold text-ink-900 transition-colors duration-150;
+    @apply hover:bg-[oklch(0.8_0.13_218)] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-line-strong bg-paper px-[18px] py-2.5;
+    @apply text-[15px] font-medium text-ink-800 transition-colors duration-150 hover:bg-paper-2;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* The URL field: a hairline-boxed row with the scheme pinned left. */
+  .url-field {
+    @apply flex items-center gap-2.5 rounded-[10px] border-[1.5px] border-ink-800 bg-paper p-[7px] pl-4;
+    @apply transition-shadow duration-150 focus-within:shadow-[0_0_0_3px_oklch(0.68_0.14_218/0.2)];
+  }
+
+  .url-input {
+    @apply min-w-0 flex-1 bg-transparent font-mono text-[15px] text-ink-800 outline-none;
+    @apply placeholder:text-ink-300;
+  }
+
+  .tag {
+    @apply inline-flex items-center rounded-[5px] px-2 py-1 font-mono text-[11px];
+  }
+
+  .tag-crit {
+    background: var(--sev-crit-bg);
+    color: var(--sev-crit-fg);
+  }
+
+  .tag-warn {
+    background: var(--sev-warn-bg);
+    color: var(--sev-warn-fg);
+  }
+
+  .tag-pass {
+    background: var(--sev-pass-bg);
+    color: var(--sev-pass-fg);
+  }
+
+  .tag-crit-dark {
+    background: var(--sev-crit-bg-dark);
+    color: var(--sev-crit-fg-dark);
+  }
+
+  .tag-warn-dark {
+    background: var(--sev-warn-bg-dark);
+    color: var(--sev-warn-fg-dark);
+  }
+
+  .tag-pass-dark {
+    background: var(--sev-pass-bg-dark);
+    color: var(--sev-pass-fg-dark);
+  }
+
+  /* Mono chip used for selectors, evidence, and raw values. */
+  .chip-mono {
+    @apply self-start rounded-[5px] bg-paper-3 px-[9px] py-1.5 font-mono text-xs text-ink-300;
+  }
+
+  /* Dark inset panel: the AI fix card and the crawl monitor share it. */
+  .panel-dark {
+    @apply rounded-xl bg-ink-900 text-on-dark;
+  }
 }
 
-/* Premium button styles */
-.btn {
-  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl;
-  @apply border border-neutral-300 dark:border-neutral-700;
-  @apply bg-white dark:bg-neutral-800;
-  @apply font-medium text-sm;
-  @apply transition-all duration-200 ease-out;
-  @apply hover:bg-neutral-50 dark:hover:bg-neutral-700;
-  @apply hover:shadow-md hover:-translate-y-0.5;
-  @apply active:scale-[0.98] active:translate-y-0;
-  @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0;
+/* The scan line that sweeps the crawl monitor while an audit runs. */
+@keyframes scan {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
 }
 
-.btn-primary {
-  @apply bg-white;
-  @apply text-black border-0;
-  @apply bg-slate-100;
-  @apply shadow-md hover:shadow-lg;
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-.btn-icon {
-  @apply p-2.5 rounded-xl;
-  @apply border border-neutral-300 dark:border-neutral-700;
-  @apply bg-white dark:bg-neutral-800;
-  @apply transition-all duration-200;
-  @apply hover:bg-neutral-50 dark:hover:bg-neutral-700;
-  @apply hover:shadow-md hover:-translate-y-0.5;
-  @apply active:scale-95;
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
 }
 
-/* Enhanced input styles */
-.input {
-  @apply w-full px-4 py-3 rounded-xl;
-  @apply border border-neutral-300 dark:border-neutral-700;
-  @apply bg-white/90 dark:bg-neutral-900/50 backdrop-blur;
-  @apply focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:focus:ring-purple-500/50;
-  @apply focus:border-indigo-500 dark:focus:border-purple-500;
-  @apply transition-all duration-200;
-  @apply placeholder:text-neutral-400 dark:placeholder:text-neutral-500;
+.animate-scan {
+  animation: scan 3.2s linear infinite;
 }
 
-/* Modern badge styles */
-.badge {
-  @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium;
-  @apply transition-all duration-200;
+.animate-pop {
+  animation: pop 0.4s ease both;
 }
 
-.badge-primary {
-  @apply bg-gradient-to-r from-indigo-500/10 to-purple-600/10;
-  @apply text-indigo-700 dark:text-indigo-300;
-  @apply border border-indigo-200 dark:border-indigo-800;
+.animate-blink {
+  animation: blink 1s step-end infinite;
 }
 
-.badge-success {
-  @apply bg-emerald-100 dark:bg-emerald-900/30;
-  @apply text-emerald-700 dark:text-emerald-300;
-  @apply border border-emerald-200 dark:border-emerald-800;
-}
-
-.badge-warning {
-  @apply bg-amber-100 dark:bg-amber-900/30;
-  @apply text-amber-700 dark:text-amber-300;
-  @apply border border-amber-200 dark:border-amber-800;
-}
-
-.badge-error {
-  @apply bg-red-100 dark:bg-red-900/30;
-  @apply text-red-700 dark:text-red-300;
-  @apply border border-red-200 dark:border-red-800;
-}
-
-.badge-info {
-  @apply bg-blue-100 dark:bg-blue-900/30;
-  @apply text-blue-700 dark:text-blue-300;
-  @apply border border-blue-200 dark:border-blue-800;
-}
-
-/* Score indicators */
-.score-circle {
-  @apply flex items-center justify-center;
-  @apply w-16 h-16 rounded-full;
-  @apply font-bold text-lg;
-  @apply shadow-lg;
-  @apply transition-transform duration-300;
-  @apply hover:scale-110;
-}
-
-.score-high {
-  @apply bg-gradient-to-br from-emerald-400 to-emerald-600;
-  @apply text-white;
-}
-
-.score-medium {
-  @apply bg-gradient-to-br from-amber-400 to-amber-600;
-  @apply text-white;
-}
-
-.score-low {
-  @apply bg-gradient-to-br from-red-400 to-red-600;
-  @apply text-white;
-}
-
-/* Chat message styles */
-.message-user {
-  @apply bg-gradient-to-r from-indigo-500 to-purple-600;
-  @apply text-white;
-  @apply ml-auto max-w-[80%];
-  @apply rounded-2xl rounded-br-md;
-  @apply shadow-md;
-}
-
-.message-assistant {
-  @apply bg-white dark:bg-neutral-800;
-  @apply border border-neutral-200 dark:border-neutral-700;
-  @apply max-w-[80%];
-  @apply rounded-2xl rounded-bl-md;
-  @apply shadow-sm;
-}
-
-/* Scrollbar styling */
 .custom-scrollbar::-webkit-scrollbar {
-  @apply w-2;
+  width: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-neutral-100 dark:bg-neutral-900 rounded-full;
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-neutral-300 dark:bg-neutral-700 rounded-full;
-  @apply hover:bg-neutral-400 dark:hover:bg-neutral-600;
+  @apply rounded-full bg-line-dark;
 }
 
-/* Gradient text */
-.gradient-text {
-  @apply bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent;
-}
-
-/* Animations */
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-.shimmer {
-  animation: shimmer 2s infinite linear;
-  background: linear-gradient(to right,
-      transparent 0%,
-      rgba(255, 255, 255, 0.4) 50%,
-      transparent 100%);
-  background-size: 1000px 100%;
-}
-
-/* Reduced motion friendly */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
-}
-
-/* Loading pulse */
-@keyframes pulse-soft {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.loading-pulse {
-  animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
