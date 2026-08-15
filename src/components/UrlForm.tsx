@@ -1,61 +1,49 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Search } from 'lucide-react';
+import { stripScheme, withScheme } from '@/lib/inputUrl';
 import { useState } from 'react';
 
 export default function UrlForm({
   onSubmit,
   loading,
+  initialUrl = '',
 }: {
   onSubmit: (url: string) => void;
   loading: boolean;
+  initialUrl?: string;
 }) {
-  const [url, setUrl] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (url.trim() && !loading) {
-      onSubmit(url.trim());
-    }
-  };
+  const [url, setUrl] = useState(stripScheme(initialUrl));
 
   return (
-    <motion.form
-      className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
-      onSubmit={handleSubmit}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+    <form
+      className="url-field w-full"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (url.trim() && !loading) onSubmit(withScheme(url));
+      }}
     >
-      <div className="relative flex-5">
-        <input
-          name="url"
-          className="input pl-[100px] pr-4"
-          placeholder="https://example.com"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          disabled={loading}
-          type="url"
-          required
-        />
-      </div>
-      <motion.button
+      <span className="hidden font-mono text-[15px] text-ink-300 sm:inline">
+        https://
+      </span>
+      <input
+        name="url"
+        type="text"
+        inputMode="url"
+        autoComplete="url"
+        aria-label="Website URL to audit"
+        className="url-input"
+        placeholder="example.com/pricing"
+        value={url}
+        onChange={(e) => setUrl(stripScheme(e.target.value))}
+        disabled={loading}
+      />
+      <button
         type="submit"
-        className="btn-primary px-8 py-3 rounded-xl whitespace-nowrap flex-1 flex items-center justify-center gap-2 font-bold"
+        className="btn-primary flex-none px-[22px]"
         disabled={loading || !url.trim()}
-        whileHover={!loading && url.trim() ? { scale: 1.02, y: -2 } : {}}
-        whileTap={!loading && url.trim() ? { scale: 0.98 } : {}}
       >
-        {loading ? (
-          <>Analyzing...</>
-        ) : (
-          <>
-            <Search className="w-4 h-4" />
-            Analyze Site
-          </>
-        )}
-      </motion.button>
-    </motion.form>
+        {loading ? 'Auditing…' : 'Audit'}
+      </button>
+    </form>
   );
 }

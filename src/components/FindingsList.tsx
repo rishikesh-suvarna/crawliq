@@ -1,145 +1,154 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { AlertCircle, AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import type { Finding } from '@/lib/checks';
+import {
+  byImpact,
+  CATEGORIES,
+  SEVERITY_LABEL,
+  SEVERITY_TAG,
+  type Severity,
+} from '@/lib/severity';
+import { useMemo, useState } from 'react';
 
-type Finding = {
-  id: string;
-  severity: 'error' | 'warn' | 'info';
-  message: string;
-  evidence?: string;
-  hint?: string;
-  category: string;
-};
+const SEVERITIES: { key: Severity; label: string; tag: string }[] = [
+  { key: 'error', label: 'critical', tag: 'tag-crit' },
+  { key: 'warn', label: 'warnings', tag: 'tag-warn' },
+  { key: 'info', label: 'notes', tag: 'tag-pass' },
+];
 
-const severityConfig = {
-  error: {
-    icon: AlertCircle,
-    color: 'text-red-600 dark:text-red-400',
-    bg: 'bg-red-50 dark:bg-red-900/20',
-    border: 'border-red-200 dark:border-red-800',
-    badge: 'badge-error',
-  },
-  warn: {
-    icon: AlertTriangle,
-    color: 'text-amber-600 dark:text-amber-400',
-    bg: 'bg-amber-50 dark:bg-amber-900/20',
-    border: 'border-amber-200 dark:border-amber-800',
-    badge: 'badge-warning',
-  },
-  info: {
-    icon: Info,
-    color: 'text-blue-600 dark:text-blue-400',
-    bg: 'bg-blue-50 dark:bg-blue-900/20',
-    border: 'border-blue-200 dark:border-blue-800',
-    badge: 'badge-info',
-  },
-};
+export default function FindingsList({
+  findings,
+  url,
+}: {
+  findings: Finding[];
+  url: string;
+}) {
+  const [severity, setSeverity] = useState<Severity | null>(null);
+  const [category, setCategory] = useState<string | null>(null);
 
-export default function FindingsList({ findings }: { findings: Finding[] }) {
-  const errorCount = findings.filter((f) => f.severity === 'error').length;
-  const warnCount = findings.filter((f) => f.severity === 'warn').length;
-  const infoCount = findings.filter((f) => f.severity === 'info').length;
+  const counts = useMemo(
+    () =>
+      findings.reduce<Record<string, number>>((acc, f) => {
+        acc[f.severity] = (acc[f.severity] ?? 0) + 1;
+        return acc;
+      }, {}),
+    [findings]
+  );
+
+  const visible = useMemo(
+    () =>
+      [...findings]
+        .sort(byImpact)
+        .filter((f) => !severity || f.severity === severity)
+        .filter((f) => !category || f.category === category),
+    [findings, severity, category]
+  );
 
   return (
-    <motion.section
-      className="card p-6"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-10%' }}
-      transition={{ duration: 0.4 }}
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-xl font-semibold">Findings</h3>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-            {findings.length} total issue{findings.length !== 1 ? 's' : ''}{' '}
-            detected
-          </p>
-        </div>
-        <div className="flex gap-2">
-          {errorCount > 0 && (
-            <span className="badge badge-error">{errorCount} Errors</span>
-          )}
-          {warnCount > 0 && (
-            <span className="badge badge-warning">{warnCount} Warnings</span>
-          )}
-          {infoCount > 0 && (
-            <span className="badge badge-info">{infoCount} Info</span>
-          )}
-        </div>
+    <section id="findings" className="flex scroll-mt-20 flex-col gap-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="m-0 text-2xl font-bold lg:text-[28px]">
+          Every finding comes with its fix
+        </h2>
+        <span className="text-[15px] text-ink-300">
+          {findings.length} finding{findings.length === 1 ? '' : 's'}, ranked by
+          impact
+        </span>
       </div>
 
-      <ul className="space-y-3">
-        {findings.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-8"
-          >
-            <CheckCircle className="w-12 h-12 mx-auto mb-3 text-emerald-500 dark:text-emerald-400" />
-            <p className="text-neutral-600 dark:text-neutral-400">
-              No issues found! Your site looks great.
-            </p>
-          </motion.div>
-        )}
-        {findings.map((f, idx) => {
-          const config = severityConfig[f.severity];
-          const Icon = config.icon;
+      <div className="overflow-hidden rounded-xl border border-line-strong">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line-soft bg-paper-2 px-4 py-4 lg:px-[22px]">
+          <span className="font-mono text-[13px] break-all">{url}</span>
+          <div className="flex flex-wrap gap-2.5">
+            {SEVERITIES.map((s) => (
+              <button
+                key={s.key}
+                type="button"
+                aria-pressed={severity === s.key}
+                onClick={() =>
+                  setSeverity((cur) => (cur === s.key ? null : s.key))
+                }
+                className={`tag cursor-pointer transition-opacity ${s.tag} ${
+                  severity && severity !== s.key ? 'opacity-40' : ''
+                }`}
+              >
+                {counts[s.key] ?? 0} {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-          return (
-            <motion.li
-              key={f.id}
-              className={`p-4 rounded-xl border ${config.border} ${config.bg} transition-all duration-200 hover:shadow-md`}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: idx * 0.05 }}
-              whileHover={{ x: 4 }}
+        <div className="flex flex-wrap gap-2 border-b border-line-soft px-4 py-3 lg:px-[22px]">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              type="button"
+              aria-pressed={category === c}
+              onClick={() => setCategory((cur) => (cur === c ? null : c))}
+              className={`cursor-pointer rounded-full border px-3 py-1 font-mono text-[11px] capitalize transition-colors ${
+                category === c
+                  ? 'border-ink-800 bg-ink-800 text-on-dark'
+                  : 'border-line text-ink-300 hover:border-ink-300'
+              }`}
             >
-              <div className="flex items-start gap-3">
-                <div
-                  className={`flex-shrink-0 w-8 h-8 rounded-lg ${config.bg} flex items-center justify-center`}
-                >
-                  <Icon className={`w-4 h-4 ${config.color}`} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <h4 className="font-semibold text-sm">{f.id}</h4>
-                    <span className={`badge ${config.badge} uppercase text-xs`}>
-                      {f.severity}
-                    </span>
-                  </div>
-                  <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-2">
-                    {f.message}
-                  </p>
-                  {f.evidence && (
-                    <div className="mt-2 p-2 rounded-lg bg-white/50 dark:bg-neutral-900/50 border border-neutral-200/50 dark:border-neutral-700/50">
-                      <p className="text-xs text-neutral-600 dark:text-neutral-400 font-mono">
-                        <span className="font-semibold">Evidence:</span>{' '}
-                        {f.evidence}
-                      </p>
-                    </div>
-                  )}
-                  {f.hint && (
-                    <div className="mt-2 p-2 rounded-lg bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-200/50 dark:border-indigo-800/50">
-                      <p className="text-xs text-indigo-700 dark:text-indigo-300">
-                        <span className="font-semibold">💡 Hint:</span> {f.hint}
-                      </p>
-                    </div>
-                  )}
-                  <div className="mt-2">
-                    <span className="inline-flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-500 capitalize">
-                      <span className="w-1.5 h-1.5 rounded-full bg-neutral-400 dark:bg-neutral-600" />
-                      {f.category}
-                    </span>
-                  </div>
-                </div>
+              {c}
+            </button>
+          ))}
+        </div>
+
+        {visible.length === 0 && (
+          <div className="flex flex-col items-center gap-2 px-6 py-14 text-center">
+            <span className="font-display text-lg font-semibold">
+              {findings.length === 0
+                ? 'No issues found on this page'
+                : 'Nothing matches these filters'}
+            </span>
+            <span className="text-[15px] text-ink-300">
+              {findings.length === 0
+                ? 'Every check passed. Re-run after your next deploy to keep it that way.'
+                : 'Clear a filter to see the rest of the report.'}
+            </span>
+          </div>
+        )}
+
+        {visible.map((f) => (
+          <div
+            key={f.id}
+            className="grid items-start gap-4 border-b border-line-soft px-4 py-5 last:border-b-0 lg:grid-cols-[110px_1fr_300px] lg:gap-6 lg:px-[22px]"
+          >
+            <span
+              className={`tag justify-self-start ${SEVERITY_TAG[f.severity]}`}
+            >
+              {SEVERITY_LABEL[f.severity]}
+            </span>
+
+            <div className="flex flex-col gap-1.5">
+              <span className="font-display text-[17px] font-semibold">
+                {f.message}
+              </span>
+              <span className="font-mono text-xs text-ink-300">
+                {f.id} · {f.category} · weight {f.weight}
+              </span>
+              {f.evidence && (
+                <span className="chip-mono mt-0.5 break-all">{f.evidence}</span>
+              )}
+            </div>
+
+            {f.hint ? (
+              <div className="flex flex-col gap-[7px] rounded-lg bg-ink-900 px-[15px] py-[13px]">
+                <span className="font-mono text-[10px] tracking-[0.08em] text-accent-bright">
+                  AI FIX
+                </span>
+                <span className="font-mono text-xs leading-[1.55] text-on-dark-body">
+                  {f.hint}
+                </span>
               </div>
-            </motion.li>
-          );
-        })}
-      </ul>
-    </motion.section>
+            ) : (
+              <div />
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
